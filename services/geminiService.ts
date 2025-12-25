@@ -1,7 +1,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { ViralAnalysis } from "../types";
 
-const apiKey = process.env.API_KEY || '';
+const apiKey = process.env.GEMINI_API_KEY || '';
 const ai = new GoogleGenAI({ apiKey });
 
 export const analyzeVirality = async (
@@ -38,7 +38,7 @@ export const analyzeVirality = async (
     `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+      model: 'gemini-2.0-flash',
       contents: prompt,
       config: {
         responseMimeType: "application/json",
@@ -58,8 +58,12 @@ export const analyzeVirality = async (
 
     const text = response.text;
     if (!text) throw new Error("No response from AI");
-    
-    return JSON.parse(text) as ViralAnalysis;
+
+    try {
+      return JSON.parse(text) as ViralAnalysis;
+    } catch (parseError) {
+      throw new Error("Invalid JSON response from AI");
+    }
 
   } catch (error) {
     console.error("Gemini API Error:", error);
@@ -76,7 +80,7 @@ export const generateCreativePrompt = async (): Promise<string> => {
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+      model: 'gemini-2.0-flash',
       contents: "Generate a single, highly descriptive, creative text-to-video prompt for a viral, abstract, or surreal short video. Output ONLY the prompt string.",
     });
     return response.text?.trim() || "A glowing orb pulsating with rhythmic energy in a void.";

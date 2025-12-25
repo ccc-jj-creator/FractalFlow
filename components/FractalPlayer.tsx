@@ -19,7 +19,7 @@ const FractalPlayer: React.FC<FractalPlayerProps> = ({ videoUrl, mode, className
         videoRef.current.pause();
       }
     }
-  }, [isPlaying, videoUrl]);
+  }, [isPlaying]);
 
   // Base video component
   const BaseVideo = () => (
@@ -73,6 +73,21 @@ const FractalPlayer: React.FC<FractalPlayerProps> = ({ videoUrl, mode, className
                  <BaseVideo />
               </div>
            </div>
+        );
+
+      case FractalMode.TimeEcho:
+        return (
+          <div className="relative w-full h-full overflow-hidden bg-black">
+            <div className="absolute inset-0 opacity-30 blur-sm scale-105">
+              <BaseVideo />
+            </div>
+            <div className="absolute inset-0 opacity-50 blur-[2px] scale-102">
+              <BaseVideo />
+            </div>
+            <div className="absolute inset-0">
+              <BaseVideo />
+            </div>
+          </div>
         );
 
       default:

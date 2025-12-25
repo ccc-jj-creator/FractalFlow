@@ -62,7 +62,7 @@ const Studio: React.FC = () => {
 
   const handleSaveProject = () => {
     store.addProject({
-      id: Date.now().toString(),
+      id: `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
       title: prompt ? prompt.slice(0, 30) + "..." : "Untitled Fractal",
       description: prompt || "Remixed fractal video",
       thumbnailUrl: "https://picsum.photos/400/225",

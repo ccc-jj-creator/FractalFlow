@@ -17,10 +17,10 @@ const Feed: React.FC = () => {
        </h1>
 
        <div className="space-y-8">
-          {MOCK_PROJECTS.map((project, idx) => (
-             <div key={idx} className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden shadow-lg">
+          {MOCK_PROJECTS.map((project) => (
+             <div key={project.id} className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden shadow-lg">
                 <div className="p-4 flex items-center gap-3">
-                   <img src={`https://picsum.photos/40/40?random=${idx + 10}`} className="w-10 h-10 rounded-full" alt="avatar" />
+                   <img src={`https://picsum.photos/40/40?random=${project.id}`} className="w-10 h-10 rounded-full" alt="avatar" />
                    <div>
                       <h3 className="font-semibold text-zinc-100">{project.author}</h3>
                       <p className="text-xs text-zinc-500">{project.createdAt} • {project.fractalMode}</p>
@@ -35,7 +35,7 @@ const Feed: React.FC = () => {
                      loop 
                      muted 
                      playsInline 
-                     onMouseOver={e => e.currentTarget.play()} 
+                     onMouseOver={e => e.currentTarget.play().catch(() => {})}
                      onMouseOut={e => e.currentTarget.pause()}
                    />
                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent">
@@ -48,11 +48,11 @@ const Feed: React.FC = () => {
                    <div className="flex items-center gap-6">
                       <button className="flex flex-col items-center gap-1 text-zinc-400 hover:text-pink-500 transition-colors">
                          <Heart size={24} />
-                         <span className="text-xs font-mono">{Math.floor(project.views / 100)}k</span>
+                         <span className="text-xs font-mono">{project.views >= 1000 ? `${Math.floor(project.views / 1000)}k` : project.views}</span>
                       </button>
                       <button className="flex flex-col items-center gap-1 text-zinc-400 hover:text-blue-400 transition-colors">
                          <MessageCircle size={24} />
-                         <span className="text-xs font-mono">{Math.floor(project.remixes / 2)}</span>
+                         <span className="text-xs font-mono">{project.remixes}</span>
                       </button>
                    </div>
 

@@ -3,10 +3,9 @@ import {
   Wand2, Upload, Layers, PlayCircle, BarChart3, 
   Share2, ChevronRight, Loader2, Sparkles, RefreshCw
 } from 'lucide-react';
-import { analyzeVirality, generateCreativePrompt } from '../services/geminiService';
+import { analyzeVirality, generateCreativePrompt, generateVideo } from '../services/geminiService';
 import FractalPlayer from '../components/FractalPlayer';
 import { FractalMode, ViralAnalysis } from '../types';
-import { PLACEHOLDER_VIDEOS, VIDEO_GENERATION_PROMPTS } from '../constants';
 import { store } from '../services/mockStore';
 import { useNavigate } from 'react-router-dom';
 
@@ -22,6 +21,7 @@ const Studio: React.FC = () => {
   const [analysis, setAnalysis] = useState<ViralAnalysis | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [generationStatus, setGenerationStatus] = useState<string>("");
 
   // Handlers
   const handleAutoPrompt = async () => {
@@ -31,17 +31,24 @@ const Studio: React.FC = () => {
     setIsGenerating(false);
   };
 
-  const handleGenerateVideo = () => {
+  const handleGenerateVideo = async () => {
     if (!prompt) return;
     setIsGenerating(true);
-    // Simulate AI generation delay
-    setTimeout(() => {
-      const randomVideo = PLACEHOLDER_VIDEOS[Math.floor(Math.random() * PLACEHOLDER_VIDEOS.length)];
-      setBaseVideoUrl(randomVideo);
-      setIsGenerating(false);
-      setStep(2);
-      setIsPlaying(true);
-    }, 2500);
+    setGenerationStatus("Initializing...");
+
+    const result = await generateVideo(prompt, (status) => {
+      setGenerationStatus(status);
+    });
+
+    setBaseVideoUrl(result.videoUrl);
+    setIsGenerating(false);
+    setGenerationStatus("");
+    setStep(2);
+    setIsPlaying(true);
+
+    if (!result.success && result.error) {
+      console.warn("Video generation fallback:", result.error);
+    }
   };
 
   const handleApplyFractal = (mode: FractalMode) => {
@@ -127,9 +134,9 @@ const Studio: React.FC = () => {
               className="mt-4 w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isGenerating ? (
-                <><Loader2 className="animate-spin" size={18} /> Generating...</>
+                <><Loader2 className="animate-spin" size={18} /> {generationStatus || "Generating..."}</>
               ) : (
-                <><Sparkles size={18} /> Generate Base Clip</>
+                <><Sparkles size={18} /> Generate with Veo 3.1</>
               )}
             </button>
           </div>
